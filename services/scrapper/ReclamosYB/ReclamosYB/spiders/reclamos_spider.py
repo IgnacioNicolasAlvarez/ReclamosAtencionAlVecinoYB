@@ -1,7 +1,5 @@
 import re
-from datetime import datetime
 
-import pandas as pd
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
@@ -25,10 +23,8 @@ class ReclamosSpider(CrawlSpider):
         "septiembre": "09",
         "octubre": "10",
         "noviembre": "11",
-        "diciembre": "12"
+        "diciembre": "12",
     }
-
-
 
     allowed_domains = ["datos.yerbabuena.gob.ar"]
     default_url = "http://datos.yerbabuena.gob.ar"
@@ -53,7 +49,6 @@ class ReclamosSpider(CrawlSpider):
             anio = match.group(2)
 
             if anio in self.years:
-
                 mes = match.group(1)
                 if mes.lower() in self.meses:
                     mes = self.meses[mes.lower()]
@@ -80,10 +75,9 @@ class ReclamosSpider(CrawlSpider):
                 "title": response.meta["title"],
                 "mes": response.meta["mes"],
                 "anio": response.meta["anio"],
-                "resource_name": response.meta["resource_name"].split(".")[0],
+                "resource_name": response.meta["resource_name"],
                 "resource_link": resource_link,
             }
         )
-
 
         yield item
