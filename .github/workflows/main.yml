@@ -21,13 +21,13 @@ jobs:
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Check directory contents
-        run: ls -la services/talk_booking
+        run: ls -la services/scrapper
       - name: Install dependencies
         run: poetry install --no-root
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
       - name: Run tests
         run: poetry run pytest --cov=./ --cov-report=xml
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
   code-quality:
@@ -48,19 +48,19 @@ jobs:
         with:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Check directory contents
-        run: ls -la services/talk_booking
+        run: ls -la services/scrapper
       - name: Install dependencies
         run: poetry install --no-root
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
       - name: Run black
         run: poetry run black . --check -v --config $(pwd)/pyproject.toml
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
       - name: Run isort
         run: poetry run isort . --check-only --profile black -v --settings-path $(pwd)/pyproject.toml
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
       - name: Run flake8
         run: poetry run flake8 . -v --config $(pwd)/pyproject.toml
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
       - name: Run bandit
         run: poetry run bandit . -v -r -c $(pwd)/bandit.yml
-        working-directory: services/talk_booking
+        working-directory: services/scrapper
