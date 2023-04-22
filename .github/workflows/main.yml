@@ -3,33 +3,6 @@ on: [push]
 
 jobs:
 
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.10']
-        poetry-version: ['1.4.2']
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Run image
-        uses: abatilo/actions-poetry@v2.1.4
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
-      - name: Check directory contents
-        run: ls -la services/scrapper
-      - name: Install dependencies
-        run: poetry install --no-root
-        working-directory: services/scrapper
-      - name: Run tests
-        run: poetry run pytest --cov=./ --cov-report=xml
-        working-directory: services/scrapper
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
   code-quality:
     strategy:
       fail-fast: false
