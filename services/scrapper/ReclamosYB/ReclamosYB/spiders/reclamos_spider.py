@@ -10,7 +10,7 @@ from ReclamosYB.items import ReclamosybItem
 class ReclamosSpider(CrawlSpider):
     name = "reclamos"
 
-    years = ["2023", "2022"]
+    years = ["2023"]
     meses = {
         "enero": "01",
         "febrero": "02",
