@@ -32,16 +32,18 @@ class ReclamosybPipeline:
     def _save_to_gbq(item):
         df = pd.read_excel(item["resource_link"])
         df.columns = df.columns.str.replace(" ", "_")
+        df.columns = df.columns.str.replace("ñ", "ni")
+
+        df["anio"] = item["anio"]
+        df["mes"] = item["mes"]
 
         df = df.apply(replace_nulls)
 
         df.to_gbq(
-            destination_table=f"{settings.PROJECT_ID}.dataset_yb"
-            + item["resource_name"]
-            + item["anio"]
-            + item["mes"],
+            destination_table=f"{settings.PROJECT_ID}.dataset_yb."
+            + item["resource_name"],
             project_id=settings.PROJECT_ID,
             progress_bar=True,
             chunksize=None,
-            if_exists="replace",
+            if_exists="append",
         )
