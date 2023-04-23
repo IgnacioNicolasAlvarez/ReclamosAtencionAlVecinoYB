@@ -28,6 +28,9 @@ jobs:
       - name: Run black
         run: poetry run black . --check -v --config $(pwd)/pyproject.toml
         working-directory: services/scrapper
+      - name: Run flake8
+        run: poetry run flake8 . -v --config $(pwd)/pyproject.toml
+        working-directory: services/scrapper
       - name: Run bandit
         run: poetry run bandit . -v -r -c $(pwd)/bandit.yml
         working-directory: services/scrapper
