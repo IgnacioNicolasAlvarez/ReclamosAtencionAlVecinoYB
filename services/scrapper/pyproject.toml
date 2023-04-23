@@ -29,3 +29,8 @@ safety = "^2.3.5"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+ignore = "E501,W503"
+max-line-length = 120
+exclude = "migrations,venv"
