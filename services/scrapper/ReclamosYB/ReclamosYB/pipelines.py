@@ -1,7 +1,18 @@
+import numpy as np
+import pandas as pd
 from scrapy.exceptions import DropItem
 
+from ReclamosYB.config import settings
 from ReclamosYB.logger import logger
-import pandas as pd
+
+
+def replace_nulls(col):
+    if col.dtype == "object":
+        return col.fillna("DEFAULT")
+    elif np.issubdtype(col.dtype, np.number):
+        return col.fillna(col.mean())
+    else:
+        return col
 
 
 class ReclamosybPipeline:
@@ -20,12 +31,17 @@ class ReclamosybPipeline:
     @staticmethod
     def _save_to_gbq(item):
         df = pd.read_excel(item["resource_link"])
+        df.columns = df.columns.str.replace(" ", "_")
+
+        df = df.apply(replace_nulls)
+
         df.to_gbq(
-            destination_table=".dataset_yb"
+            destination_table=f"{settings.PROJECT_ID}.dataset_yb"
             + item["resource_name"]
-            + item["mes"]
-            + item["anio"],
-            project_id="",
+            + item["anio"]
+            + item["mes"],
+            project_id=settings.PROJECT_ID,
             progress_bar=True,
-            if_exists="replace"
+            chunksize=None,
+            if_exists="replace",
         )
