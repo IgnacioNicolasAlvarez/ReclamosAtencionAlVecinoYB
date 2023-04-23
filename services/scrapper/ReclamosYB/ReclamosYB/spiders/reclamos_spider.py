@@ -4,13 +4,14 @@ import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
+from ReclamosYB.config import settings
 from ReclamosYB.items import ReclamosybItem
 
 
 class ReclamosSpider(CrawlSpider):
     name = "reclamos"
 
-    years = ["2023"]
+    years = ["2023", "2022"]
     meses = {
         "enero": "01",
         "febrero": "02",
@@ -26,10 +27,10 @@ class ReclamosSpider(CrawlSpider):
         "diciembre": "12",
     }
 
-    allowed_domains = ["datos.yerbabuena.gob.ar"]
-    default_url = "http://datos.yerbabuena.gob.ar"
+    allowed_domains = [settings.ALLOWED_DOMAIN]
+    default_url = settings.DEFAULT_URL
     start_urls = [
-        "http://datos.yerbabuena.gob.ar/organization/atencion-al-vecino?page=1",
+        settings.START_URL,
     ]
 
     rules = (
@@ -59,17 +60,20 @@ class ReclamosSpider(CrawlSpider):
     def parse_item(self, response):
         for r in response.css("li.resource-item"):
             resource_name = r.css("a::text").get().strip()
-            resource_link = self.default_url + r.css("a::attr(href)").get().strip()
+            _href_link = r.css("a::attr(href)").get().strip()
+
+            rl = self.default_url + _href_link
             item = {
                 "title": response.meta["title"],
                 "resource_name": resource_name,
                 "mes": response.meta["mes"],
                 "anio": response.meta["anio"],
             }
-            yield scrapy.Request(resource_link, callback=self.parse_subitem, meta=item)
+            yield scrapy.Request(rl, callback=self.parse_subitem, meta=item)
 
     def parse_subitem(self, response):
-        resource_link = response.css("a.resource-url-analytics::attr(href)").get()
+        __css_mask = "a.resource-url-analytics::attr(href)"
+        resource_link = response.css(__css_mask).get()
         item = ReclamosybItem(
             {
                 "title": response.meta["title"],
