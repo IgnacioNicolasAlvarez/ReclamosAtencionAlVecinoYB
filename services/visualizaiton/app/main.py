@@ -1,28 +1,34 @@
+import plotly.express as px
 import streamlit as st
-from google.oauth2 import service_account
-from google.cloud import bigquery
+from data import run_query
 
-# Create API client.
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"]
-)
-client = bigquery.Client(credentials=credentials)
+st.write("# Yerba Buena, Tucuman: Datasets")
+
+tab1, tab2 = st.tabs(["Perdida de Agua", "-"])
 
 
-# Perform query.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=600)
-def run_query(query):
-    query_job = client.query(query)
-    rows_raw = query_job.result()
-    # Convert to list of dicts. Required for st.cache_data to hash the return value.
-    rows = [dict(row) for row in rows_raw]
-    return rows
+with tab1:
+    df = run_query("SELECT * FROM `project-reclamos-yb.dataset_yb.vw_perdida_agua`")
 
+    unique_AnioMes = df["AnioMes"].unique().tolist()
 
-rows = run_query("SELECT * FROM `project-reclamos-yb.dataset_yb.Perdida de Agua` LIMIT 10")
+    st.write("## Perdida de Agua")
 
-# Print results.
-st.write("Some wise words from Shakespeare:")
-for row in rows:
-    st.write("✍️ " + row["Municipio"])
+    options = st.multiselect(
+        "Selecciona Periodo/s",
+        unique_AnioMes,
+        unique_AnioMes[0],
+    )
+
+    filtered_df = df[df["AnioMes"].isin(options)]
+
+    st.divider()
+    st.dataframe(filtered_df)
+
+    fig = px.bar(
+        filtered_df,
+        x="Barrio",
+        y="Cantidad",
+    )
+
+    st.plotly_chart(fig, theme="streamlit", use_container_width=True)
