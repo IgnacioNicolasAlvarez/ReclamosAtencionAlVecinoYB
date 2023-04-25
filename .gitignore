@@ -163,6 +163,6 @@ cython_debug/
 # Ignore dynaconf secret files
 .secrets.*
 .env
-
+*.log
 .streamlit/secrets.toml
 /services/visualizaiton/.streamlit/secrets.toml

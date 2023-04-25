@@ -1,15 +1,16 @@
 FROM python:3.10-slim
 
-RUN mkdir -p /home/github && addgroup github && useradd -d /home/github -g github github && chown github:github /home/github
+WORKDIR /github
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir poetry
 
-USER github
+COPY pyproject.toml poetry.lock ./
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-root
 
-WORKDIR /home/github
+COPY ReclamosYB /github/app
 
-RUN curl -sSL https://install.python-poetry.org | python3 -
-
-ENV PATH=/home/github/.local/bin:$PATH
-
-RUN poetry config virtualenvs.in-project true
+CMD ["scrapy", "crawl", "reclamos"]
