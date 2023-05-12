@@ -8,7 +8,7 @@ tab1, tab2 = st.tabs(["Perdida de Agua", "-"])
 
 
 with tab1:
-    df = run_query("SELECT * FROM `project-reclamos-yb.dataset_yb.vw_perdida_agua`")
+    df = run_query("SELECT * FROM `project-reclamos-yb.vw_dataset_yb.vw_perdida_agua`")
 
     unique_AnioMes = df["AnioMes"].unique().tolist()
 
